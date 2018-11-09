@@ -1,16 +1,12 @@
-from helpers import file_to_table_name, table_to_file_name, get_table_list
+from helpers import file_to_table_name, get_table_list
+from table import Table
 
 class Database():
     def __init__(self, database_dir):
         self.database_dir = database_dir
+        self.refresh()
 
-    def reload(self):
+    def refresh(self):
+        self.tables = { }
         for table in get_table_list(self.database_dir):
-            self.parse_table_file(table)
-
-    def parse_table_file(self, table_name):
-        # TODO error handling
-        filehandle = open(table_to_file_name(self.database_dir, table_name), "r")
-        for line in filehandle:
-            print(line) # TODO parse file
-        filehandle.close()
+            self.tables[table] = Table(table, self.database_dir)

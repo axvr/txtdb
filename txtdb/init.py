@@ -5,7 +5,6 @@ from database import Database
 def main():
     (opt, args) = parse_cli_options()
     db = Database(opt.database)
-    db.reload()
 
 def parse_cli_options():
     """https://docs.python.org/3.1/library/optparse.html#module-optparse"""
