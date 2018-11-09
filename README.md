@@ -50,7 +50,7 @@ Column attributes are appended to the end of the datatype (e.g. `,string?,`).
 The currently available attributes are:
 
 - `$`: Primary key
-- `%`: Foreign key
+<!-- - `%`: Foreign key -->
 - `?`: Nullable column
 
 At the moment there is a maximum of one attribute per column.
@@ -65,3 +65,4 @@ that column. A null value is represented by and empty CSV field.
 [//]: https://en.wikipedia.org/wiki/Relational_database (Releational database)
 [//]: https://en.wikipedia.org/wiki/Unique_key (Prmiary key)
 [//]: https://en.wikipedia.org/wiki/Foreign_key (Foreign key)
+[//]: https://en.wikipedia.org/wiki/Comma-separated_values (Comma-separated values)
