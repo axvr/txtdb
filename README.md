@@ -35,11 +35,10 @@ The table name is simply the file name without the extension.
 
 - `string`   (e.g. `"something"`)
 - `int`      (e.g. `12345`)
-- `bigint`   (e.g. `12345678123456789`)
 - `datetime` (e.g. `2018-11-09`)
 - `boolean`  (e.g. `true`)
 
-(Note: `int` is `int32` and `bigint` is `int64`).
+(Note: when strings are stored, any commas will be escaped in the table CSV file).
 
 
 ### Column attributes
