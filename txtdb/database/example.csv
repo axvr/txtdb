@@ -1,0 +1,6 @@
+string$,string,boolean?,int?
+"id","name","pass","score"
+"d928ffe1-cef4-41fd-8123-f2ef7b009a69","John Smith",true,91
+"6f2b874a-7849-4115-a6c8-9bae8918f886","Jane Doe",false,62
+"49064480-4056-4a08-aff9-4af9580f1879","Bob",,
+"48da7211-3648-4a8e-85d1-8d68c6161653","Alice",true,95
