@@ -35,8 +35,8 @@ The table name is simply the file name without the extension.
 
 - `string`   (e.g. `"something"`)
 - `int`      (e.g. `12345`)
-- `datetime` (e.g. `2018-11-09`)
 - `boolean`  (e.g. `true`)
+<!-- - `datetime` (e.g. `2018-11-09`) -->
 
 (Note: when strings are stored, any commas will be escaped in the table CSV file).
 
@@ -58,7 +58,7 @@ At the moment there is a maximum of one attribute per column.
 ### Null values
 
 If a column has the `?` (null) attribute, then null values can be stored in
-that column. A null value is represented by and empty CSV field.
+that column. A null value is represented by an empty CSV field.
 
 
 [//]: https://en.wikipedia.org/wiki/Relational_database (Releational database)

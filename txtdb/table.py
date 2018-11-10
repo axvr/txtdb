@@ -1,32 +1,30 @@
 import re
 from helpers import table_to_file_name
 
-# TODO Datetime data type
 # TODO Foreign keys
+# TODO store column names in the same object as the column types
 
 class Table:
     def __init__(self, table_name, database_dir):
         self.name = table_name
         self.rows = []
         self.__build_table(table_name, database_dir)
-        print(self.types)
 
     def __build_table(self, table_name, database_dir):
         fh = open(table_to_file_name(database_dir, table_name), "r")
 
-        self.__parse_data_types(fh.readline())
-        self.col_names = self.__parse_column_names(fh.readline())
+        self.columns = self.__parse_header(fh.readline(), fh.readline())
 
         for row in fh:
-            self.insert_row(self.__parse_row(row))
+            self.insert(self.__parse_row(row))
 
         fh.close()
 
-    def __parse_data_types(self, type_string):
-        types = type_string.strip().split(",")
-        self.types = []
+    def __parse_header(self, types, names):
+        columns = []
+        names_list = list(map(lambda c: c.replace("\"", ""), names.strip().split(",")))
 
-        for idx, val in enumerate(types):
+        for idx, val in enumerate(types.strip().split(",")):
             if val.startswith("string"):
                 col_type = str
             elif val.startswith("int"):
@@ -36,14 +34,14 @@ class Table:
             else:
                 col_type = None
 
-            self.types.append({
+            columns.append({
+                "name": names_list[idx],
                 "type": col_type,
                 "nullable": True if val[-1:] == "?" else False,
                 "primary key": True if val[-1:] == "$" else False
             })
 
-    def __parse_column_names(self, input_string):
-        return list(map(lambda c: c.replace("\"", ""), input_string.split(",")))
+        return columns
 
     def __parse_row(self, row):
         return list(map(self.__cast_fields, re.split("(?:(?<!\\\),)", row.strip())))
@@ -65,17 +63,16 @@ class Table:
             if (v == column):
                 return i
 
-    def insert_row(self, row):
+    def insert(self, row):
         for idx, field in enumerate(row):
-            print(field)
-            if (type(field) == self.types[idx]["type"]):
+            if (type(field) == self.columns[idx]["type"]):
                 self.rows.append(row)
-            elif (field == None and self.types[idx]["nullable"] == True):
+            elif (field == None and self.columns[idx]["nullable"] == True):
                 self.rows.append(row)
             else:
-                raise TypeError("Value \"" + str(field) + "\" is not of type \"" + str(self.types[idx]["type"]) + "\"")
+                raise TypeError("Value \"" + str(field) + "\" is not of type \"" + str(self.columns[idx]["type"]) + "\"")
 
-    # def write_table(self):
+    # def write(self):
     #     # fh = open(table_to_file_name(self.name), "w")
     #     pass
 

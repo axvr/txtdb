@@ -18,4 +18,8 @@ class Database():
             if (isfile(join(self.database_dir, f))):
                 yield file_to_table_name(f)
 
-# db.tables['example'].row()
+    def write(self):
+        for table in self.get_table_list():
+            table.write()
+
+# E.g. db.tables['example'].insert(row)
