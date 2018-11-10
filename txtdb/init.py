@@ -12,3 +12,4 @@ def parse_cli_options():
     return parser.parse_args()
 
 # TODO interactive mode, to import CSV files
+# TODO interactive SQL environment (use recursive interface?)
