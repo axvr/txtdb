@@ -1,6 +1,9 @@
 import re
 from helpers import table_to_file_name
 
+# TODO Datetime data type
+# TODO Foreign keys
+
 class Table:
     def __init__(self, table_name, database_dir):
         self.name = table_name
@@ -11,7 +14,7 @@ class Table:
     def __build_table(self, table_name, database_dir):
         fh = open(table_to_file_name(database_dir, table_name), "r")
 
-        self.col_types = self.__parse_data_types(fh.readline())
+        self.__parse_data_types(fh.readline())
         self.col_names = self.__parse_column_names(fh.readline())
 
         for row in fh:
@@ -45,7 +48,6 @@ class Table:
     def __parse_row(self, row):
         return list(map(self.__cast_fields, re.split("(?:(?<!\\\),)", row.strip())))
 
-    # TODO Datetime
     def __cast_fields(self, field):
         if (field.lower() == "true"):
             return True
@@ -63,13 +65,22 @@ class Table:
             if (v == column):
                 return i
 
-    # TODO validate row data before appending
     def insert_row(self, row):
-        for index, field in enumerate(row):
-            print(type(field))
-        self.rows.append(row)
+        for idx, field in enumerate(row):
+            print(field)
+            if (type(field) == self.types[idx]["type"]):
+                self.rows.append(row)
+            elif (field == None and self.types[idx]["nullable"] == True):
+                self.rows.append(row)
+            else:
+                raise TypeError("Value \"" + str(field) + "\" is not of type \"" + str(self.types[idx]["type"]) + "\"")
 
-    # TODO escape commas in strings
-    # TODO enclose strings in quotes
-    def write_table(self):
-        pass
+    # def write_table(self):
+    #     # fh = open(table_to_file_name(self.name), "w")
+    #     pass
+
+    # def __fields_to_str(self, field):
+    #     if (isinstance(field, str)):
+    #         return "\"" + field.replace(",", "\\,") + "\""
+    #     else:
+    #         return str(field)
