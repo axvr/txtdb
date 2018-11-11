@@ -4,6 +4,7 @@ from database import Database
 def main():
     (opt, args) = parse_cli_options()
     db = Database(opt.database)
+    db.write()
 
 def parse_cli_options():
     parser = OptionParser()

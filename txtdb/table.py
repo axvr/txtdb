@@ -2,16 +2,18 @@ import re
 from helpers import table_to_file_name
 
 # TODO Foreign keys
-# TODO store column names in the same object as the column types
+# TODO provide mechanism to add tables which don't already have table files
+# FIXME better store database dir and table name
 
 class Table:
     def __init__(self, table_name, database_dir):
         self.name = table_name
+        self.dir = database_dir
         self.rows = []
-        self.__build_table(table_name, database_dir)
+        self.__build_table(database_dir)
 
-    def __build_table(self, table_name, database_dir):
-        fh = open(table_to_file_name(database_dir, table_name), "r")
+    def __build_table(self, database_dir):
+        fh = open(table_to_file_name(database_dir, self.name), "r")
 
         self.columns = self.__parse_header(fh.readline(), fh.readline())
 
@@ -66,18 +68,79 @@ class Table:
     def insert(self, row):
         for idx, field in enumerate(row):
             if (type(field) == self.columns[idx]["type"]):
-                self.rows.append(row)
+                continue
             elif (field == None and self.columns[idx]["nullable"] == True):
-                self.rows.append(row)
+                continue
             else:
                 raise TypeError("Value \"" + str(field) + "\" is not of type \"" + str(self.columns[idx]["type"]) + "\"")
+        self.rows.append(row)
 
-    # def write(self):
-    #     # fh = open(table_to_file_name(self.name), "w")
-    #     pass
+    def update(self, row):
+        # NOTE use primary key to locate record to update
+        pass
 
-    # def __fields_to_str(self, field):
-    #     if (isinstance(field, str)):
-    #         return "\"" + field.replace(",", "\\,") + "\""
-    #     else:
-    #         return str(field)
+    def delete(self, row):
+        pass
+
+    def write(self):
+        fh = open(table_to_file_name(self.dir, self.name), "w+")
+
+        contents = []
+
+        (names, types) = self.__construct_file_header()
+
+        contents.append(types)
+        contents.append(names)
+
+        for row in self.rows:
+            contents.append(self.__construct_data_row(row))
+
+        fh.writelines(contents)
+        fh.close
+
+    def __construct_data_row(self, original_row):
+        row = ""
+
+        for field in original_row:
+            if (isinstance(field, str)):
+                row = row + "\"" + field.replace(",", "\\,") + "\"" + ","
+            elif (isinstance(field, bool)):
+                row = row + str(field).lower() + ","
+            elif (field == None):
+                row = row + ","
+            else:
+                row = row + str(field) + ","
+
+        return row[:-1] + "\n"
+
+    def __construct_file_header(self):
+        types = ""
+        names = ""
+
+        for col in self.columns:
+            names = names + "\"" + col["name"] + "\","
+
+            # Types
+            if (col["type"] == str):
+                col_type = "string"
+            elif (col["type"] == int):
+                col_type = "int"
+            elif (col["type"] == bool):
+                col_type = "boolean"
+            else:
+                col_type = ""
+
+            # Attributes
+            attrs = ""
+            if (col["nullable"] == True):
+                attrs = attrs + "?"
+            elif (col["primary key"] == True):
+                attrs = attrs + "$"
+
+            types = types + col_type + attrs + ","
+
+        # Remove trailing commas
+        names = names[:-1] + "\n"
+        types = types[:-1] + "\n"
+
+        return (names, types)

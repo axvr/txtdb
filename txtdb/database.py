@@ -13,6 +13,8 @@ class Database():
         for table in self.get_table_list():
             self.tables[table] = Table(table, self.database_dir)
 
+    # FIXME store a list of actual files, to prevent issues is files are
+    # removed.
     def get_table_list(self):
         for f in listdir(self.database_dir):
             if (isfile(join(self.database_dir, f))):
@@ -20,6 +22,4 @@ class Database():
 
     def write(self):
         for table in self.get_table_list():
-            table.write()
-
-# E.g. db.tables['example'].insert(row)
+            self.tables[file_to_table_name(table)].write()
