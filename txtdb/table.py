@@ -2,18 +2,17 @@ import re
 from helpers import table_to_file_name
 
 # TODO Foreign keys
-# TODO provide mechanism to add tables which don't already have table files
-# FIXME better store database dir and table name
+# TODO provide mechanism to create new tables
 
 class Table:
     def __init__(self, table_name, database_dir):
         self.name = table_name
         self.dir = database_dir
         self.rows = []
-        self.__build_table(database_dir)
+        self.__build_table()
 
-    def __build_table(self, database_dir):
-        fh = open(table_to_file_name(database_dir, self.name), "r")
+    def __build_table(self):
+        fh = open(table_to_file_name(self.dir, self.name), "r")
 
         self.columns = self.__parse_header(fh.readline(), fh.readline())
 
@@ -76,7 +75,6 @@ class Table:
         self.rows.append(row)
 
     def update(self, row):
-        # NOTE use primary key to locate record to update
         pass
 
     def delete(self, row):

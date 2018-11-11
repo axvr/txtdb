@@ -4,6 +4,7 @@ from database import Database
 def main():
     (opt, args) = parse_cli_options()
     db = Database(opt.database)
+    # db.tables["example"].insert(["some random id", "Fred", True, 12])
     db.write()
 
 def parse_cli_options():
