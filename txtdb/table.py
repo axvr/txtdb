@@ -1,8 +1,9 @@
 import re
 from helpers import table_to_file_name
 
-# TODO Foreign keys
+# TODO Foreign keys and table relationships
 # TODO provide mechanism to create new tables
+# TODO update and delete
 
 class Table:
     def __init__(self, table_name, database_dir):
@@ -66,19 +67,15 @@ class Table:
 
     def insert(self, row):
         for idx, field in enumerate(row):
-            if (type(field) == self.columns[idx]["type"]):
+            if ((self.columns[idx]["primary key"] == True) and (any(field in sub[idx] for sub in self.rows))):
+                raise KeyError("Primary key \"" + field + "\" already exists")
+            elif (type(field) == self.columns[idx]["type"]):
                 continue
             elif (field == None and self.columns[idx]["nullable"] == True):
                 continue
             else:
                 raise TypeError("Value \"" + str(field) + "\" is not of type \"" + str(self.columns[idx]["type"]) + "\"")
         self.rows.append(row)
-
-    def update(self, row):
-        pass
-
-    def delete(self, row):
-        pass
 
     def write(self):
         fh = open(table_to_file_name(self.dir, self.name), "w+")
