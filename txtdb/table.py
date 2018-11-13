@@ -2,18 +2,21 @@ import re
 from helpers import table_to_file_name
 
 # TODO Foreign keys and table relationships
-# TODO provide mechanism to create new tables
-# TODO update and delete
+# TODO select, update and delete
 
 class Table:
-    def __init__(self, table_name, database_dir):
+    def __init__(self, table_name, database_dir, columns=None):
         self.name = table_name
         self.dir = database_dir
         self.rows = []
-        self.__build_table()
 
-    def __build_table(self):
-        fh = open(table_to_file_name(self.dir, self.name), "r")
+        if (columns == None):
+            self.__parse_table_file(table_to_file_name(self.dir, self.name))
+        else:
+            self.columns = columns
+
+    def __parse_table_file(self, table_file):
+        fh = open(table_file, "r")
 
         self.columns = self.__parse_header(fh.readline(), fh.readline())
 

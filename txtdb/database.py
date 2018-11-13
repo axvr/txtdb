@@ -14,6 +14,14 @@ class Database():
         for table in self.__get_table_files():
             self.tables[table] = Table(table, self.database_dir)
 
+    def new_table(self, name, columns):
+        """Create a new table in the database"""
+        if (name not in self.tables):
+            # TODO ensure columns are in valid format
+            self.tables[name] = Table(name, self.database_dir, columns)
+        else:
+            raise NameError("Table with name \"" + name + "\" already exists")
+
     def write(self):
         """Save all database changes"""
         for table in self.tables:
