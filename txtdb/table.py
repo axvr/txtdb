@@ -66,6 +66,7 @@ class Table:
                 return i
 
     def insert(self, row):
+        """Insert a new row into the table"""
         for idx, field in enumerate(row):
             if ((self.columns[idx]["primary key"] == True) and (any(field in sub[idx] for sub in self.rows))):
                 raise KeyError("Primary key \"" + field + "\" already exists")
@@ -78,6 +79,7 @@ class Table:
         self.rows.append(row)
 
     def write(self):
+        """Save changes to the table"""
         fh = open(table_to_file_name(self.dir, self.name), "w+")
 
         contents = []

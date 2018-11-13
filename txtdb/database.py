@@ -6,20 +6,20 @@ from os.path import isfile, join
 class Database():
     def __init__(self, database_dir):
         self.database_dir = database_dir
-        self.refresh()
+        self.reload()
 
-    def refresh(self):
+    def reload(self):
+        """Reload the database tables based on the table files"""
         self.tables = { }
-        for table in self.get_table_list():
+        for table in self.__get_table_files():
             self.tables[table] = Table(table, self.database_dir)
 
-    # FIXME store a list of actual files, to prevent issues is files are
-    # removed.
-    def get_table_list(self):
+    def write(self):
+        """Save all database changes"""
+        for table in self.tables:
+            self.tables[file_to_table_name(table)].write()
+
+    def __get_table_files(self):
         for f in listdir(self.database_dir):
             if (isfile(join(self.database_dir, f))):
                 yield file_to_table_name(f)
-
-    def write(self):
-        for table in self.get_table_list():
-            self.tables[file_to_table_name(table)].write()

@@ -40,7 +40,7 @@ The table name is simply the file name without the extension.
 - `boolean`  (e.g. `true`)
 <!-- - `datetime` (e.g. `2018-11-09`) -->
 
-(Note: when strings are stored, any commas will be escaped in the table CSV file).
+(Note: when strings are stored, any commas will be escaped in the CSV table file).
 
 
 ### Column attributes
@@ -51,8 +51,8 @@ Column attributes are appended to the end of the datatype (e.g. `,string?,`).
 The currently available attributes are:
 
 - `$`: Primary key
-<!-- - `%`: Foreign key -->
 - `?`: Nullable column
+<!-- - `%`: Foreign key -->
 
 At the moment there is a maximum of one attribute per column.
 
