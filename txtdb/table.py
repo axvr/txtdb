@@ -49,9 +49,9 @@ class Table:
         return columns
 
     def __parse_row(self, row):
-        return list(map(self.__cast_fields, re.split("(?:(?<!\\\),)", row.strip())))
+        return list(map(self.__cast_field, re.split("(?:(?<!\\\),)", row.strip())))
 
-    def __cast_fields(self, field):
+    def __cast_field(self, field):
         if (field.lower() == "true"):
             return True
         elif (field.lower() == "false"):

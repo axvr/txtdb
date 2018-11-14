@@ -1,20 +1,20 @@
-from helpers import file_to_table_name
+from helpers import file_to_table_name, table_to_file_name
 from table import Table
-from os import listdir
+from os import listdir, remove
 from os.path import isfile, join
 
 class Database():
     def __init__(self, database_dir):
         self.database_dir = database_dir
+        self.tables = { }
         self.reload()
 
     def reload(self):
-        """Reload the database tables based on the table files"""
-        self.tables = { }
+        """Reload the database tables from the table files"""
         for table in self.__get_table_files():
             self.tables[table] = Table(table, self.database_dir)
 
-    def new_table(self, name, columns):
+    def create_table(self, name, columns):
         """Create a new table in the database"""
         if (name not in self.tables):
             # TODO ensure columns are in valid format
@@ -23,9 +23,17 @@ class Database():
             raise NameError("Table with name \"" + name + "\" already exists")
 
     def write(self):
-        """Save all database changes"""
+        """Save all changes to the database"""
         for table in self.tables:
             self.tables[file_to_table_name(table)].write()
+
+    def drop(self, table):
+        if (self.tables.pop(table, None) == None):
+            raise NameError("Table with name \"" + table + "\" doesn't exist")
+
+        f = table_to_file_name(self.database_dir, table)
+        if (isfile(f)):
+            remove(f)
 
     def __get_table_files(self):
         for f in listdir(self.database_dir):
