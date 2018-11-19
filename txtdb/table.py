@@ -4,7 +4,7 @@ import re
 from helpers import table_to_file_name
 
 # TODO Foreign keys and table relationships
-# TODO select, update and delete
+# TODO select and update methods
 
 class Table:
     def __init__(self, table_name, database_dir, columns=None):
@@ -70,10 +70,9 @@ class Table:
             if v == column:
                 return i
 
-    def insert(self, row):
-        """Insert a new row into the table"""
+    def __check_row_is_valid(self, row, check_pk=True):
         for idx, field in enumerate(row):
-            if ((self.columns[idx]["primary key"] is True) and (any(field in sub[idx] for sub in self.rows))):
+            if (check_pk and (self.columns[idx]["primary key"] is True) and (any(field in sub[idx] for sub in self.rows))):
                 raise KeyError("Primary key \"" + field + "\" already exists")
             elif (type(field) == self.columns[idx]["type"]):
                 continue
@@ -81,7 +80,12 @@ class Table:
                 continue
             else:
                 raise TypeError("Value \"" + str(field) + "\" is not of type \"" + str(self.columns[idx]["type"]) + "\"")
-        self.rows.append(row)
+        return True
+
+    def insert(self, row):
+        """Insert a new row into the table"""
+        if self.__check_row_is_valid(row):
+            self.rows.append(row)
 
     def write(self):
         """Save changes to the table"""
@@ -99,6 +103,22 @@ class Table:
 
         fh.writelines(contents)
         fh.close
+
+    def delete(self, row):
+        """Delete a row from the table"""
+        try:
+            self.rows.remove(row)
+        except ValueError:
+            raise ValueError("Row \"" + str(row) + "\" does not exist")
+
+    def update(self, original, updated):
+        """Change a row in the table"""
+        if self.__check_row_is_valid(updated, check_pk=False):
+            for idx, row in enumerate(self.rows):
+                if row == original:
+                    self.rows[idx] = updated
+                    return
+            raise ValueError("Row \"" + str(row) + "\" does not exist")
 
     def __construct_data_row(self, original_row):
         row = ""
