@@ -1,3 +1,5 @@
+"""Create a new table instance"""
+
 import re
 from helpers import table_to_file_name
 
@@ -10,7 +12,7 @@ class Table:
         self.dir = database_dir
         self.rows = []
 
-        if (columns == None):
+        if columns is None:
             self.__parse_table_file(table_to_file_name(self.dir, self.name))
         else:
             self.columns = columns
@@ -52,30 +54,30 @@ class Table:
         return list(map(self.__cast_field, re.split("(?:(?<!\\\),)", row.strip())))
 
     def __cast_field(self, field):
-        if (field.lower() == "true"):
+        if field.lower() == "true":
             return True
-        elif (field.lower() == "false"):
+        elif field.lower() == "false":
             return False
-        elif (re.match("^\d+$", field)):
+        elif re.match("^\d+$", field):
             return int(field)
-        elif (re.match("^\".*\"$", field)):
+        elif re.match("^\".*\"$", field):
             return field[1:-1].replace("\\,", ",")
         else:
             return None
 
     def __get_column_index(column):
         for i, v in enumerate(col_names):
-            if (v == column):
+            if v == column:
                 return i
 
     def insert(self, row):
         """Insert a new row into the table"""
         for idx, field in enumerate(row):
-            if ((self.columns[idx]["primary key"] == True) and (any(field in sub[idx] for sub in self.rows))):
+            if ((self.columns[idx]["primary key"] is True) and (any(field in sub[idx] for sub in self.rows))):
                 raise KeyError("Primary key \"" + field + "\" already exists")
             elif (type(field) == self.columns[idx]["type"]):
                 continue
-            elif (field == None and self.columns[idx]["nullable"] == True):
+            elif (field is None and self.columns[idx]["nullable"] is True):
                 continue
             else:
                 raise TypeError("Value \"" + str(field) + "\" is not of type \"" + str(self.columns[idx]["type"]) + "\"")
@@ -106,7 +108,7 @@ class Table:
                 row = row + "\"" + field.replace(",", "\\,") + "\"" + ","
             elif (isinstance(field, bool)):
                 row = row + str(field).lower() + ","
-            elif (field == None):
+            elif (field is None):
                 row = row + ","
             else:
                 row = row + str(field) + ","
@@ -132,9 +134,9 @@ class Table:
 
             # Attributes
             attrs = ""
-            if (col["nullable"] == True):
+            if (col["nullable"] is True):
                 attrs = attrs + "?"
-            elif (col["primary key"] == True):
+            elif (col["primary key"] is True):
                 attrs = attrs + "$"
 
             types = types + col_type + attrs + ","

@@ -1,5 +1,5 @@
-from optparse import OptionParser
 from database import Database
+from cli import parse_cli_options
 
 def main():
     (opt, args) = parse_cli_options()
@@ -21,11 +21,6 @@ def main():
     # Write the contents of the database to disk
     db.write()
 
-def parse_cli_options():
-    parser = OptionParser()
-    parser.add_option("-d", "--database", dest="database", default="example",
-            help="Specifiy the path to the database directory")
-    return parser.parse_args()
-
+# TODO backups and transactions
 # TODO interactive mode, to import CSV files
 # TODO interactive SQL environment (use recursive interface?)
