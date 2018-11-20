@@ -4,9 +4,8 @@ import re
 from helpers import table_to_file_name
 
 # TODO Foreign keys and table relationships
-# TODO select and update methods
 
-class Table:
+class Table(object):
     def __init__(self, table_name, database_dir, columns=None):
         self.name = table_name
         self.dir = database_dir
@@ -51,7 +50,7 @@ class Table:
         return columns
 
     def __parse_row(self, row):
-        return list(map(self.__cast_field, re.split("(?:(?<!\\\),)", row.strip())))
+        return list(map(self.__cast_field, re.split("(?<!\\\),", row.strip())))
 
     def __cast_field(self, field):
         if field.lower() == "true":
@@ -119,6 +118,10 @@ class Table:
                     self.rows[idx] = updated
                     return
             raise ValueError("Row \"" + str(row) + "\" does not exist")
+
+    def select(self):
+        """Return all rows in the table, and the column information"""
+        return (self.columns, self.rows)
 
     def __construct_data_row(self, original_row):
         row = ""

@@ -26,7 +26,6 @@ def main():
     # Drop a table from the database
     db.drop("something")
 
-
     # Write the contents of the database to disk
     db.write()
 
