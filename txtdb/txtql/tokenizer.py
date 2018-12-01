@@ -24,6 +24,7 @@ class Tokenizer:
         ["join_inner", r"(?i)\b(?:INNER\s+)?JOIN\b"],
         ["on", r"(?i)\bON\b"],
         ["in", r"(?i)\bIN\b"],
+        ["as", r"(?i)\bAS\b"],
         ["exists", r"(?i)\bEXISTS\b"],
         ["drop", r"(?i)\bDROP\b"],
         ["table", r"(?i)\bTABLE\b"],
@@ -62,12 +63,12 @@ class Tokenizer:
         self.code = self.code.strip()
 
         while self.code != "":
-            tokens.append(self.tokenize_next_token())
+            tokens.append(self.__tokenize_next_token())
             self.code = self.code.strip()
 
         return tokens
 
-    def tokenize_next_token(self):
+    def __tokenize_next_token(self):
         for (type, pattern) in self.TOKEN_TYPES:
             m = re.match(r"\A(" + pattern + r")", self.code)
             if m is not None:
