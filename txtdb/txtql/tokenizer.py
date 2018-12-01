@@ -1,4 +1,7 @@
 import re
+from collections import namedtuple
+
+Token = namedtuple('Token', 'type value')
 
 class Tokenizer:
     # TODO add more tokens
@@ -44,7 +47,7 @@ class Tokenizer:
         ["greater_equal", r">="],
         ["less_equal", r"<="],
         ["equal", r"="],
-        ["name", r"\b(?:[a-zA-Z]+|\[[a-zA-Z _-]+\])\b"],
+        ["name", r"(?:\b[a-zA-Z]+\b|\[[a-zA-Z _-]+\])"],
         ["string", r"'.*?(?<!\\)'"],
         ["open_paren", r"\("],
         ["close_paren", r"\)"],
@@ -61,7 +64,6 @@ class Tokenizer:
         while self.code != "":
             tokens.append(self.tokenize_next_token())
             self.code = self.code.strip()
-            print(str(tokens))
 
         return tokens
 
@@ -71,7 +73,7 @@ class Tokenizer:
             if m is not None:
                 value = m.group(1)
                 self.code = self.code[len(value):]
-                return (type, value)
+                return Token(type=type, value=value)
 
         raise RuntimeError("Couldn't match a token on \"" +
                 self.code + "\"")

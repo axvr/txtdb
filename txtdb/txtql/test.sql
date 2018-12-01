@@ -1,3 +1,3 @@
 SELECT something
-FROM sometable
+FROM [sometable]
 WHERE something = 'foobar'
