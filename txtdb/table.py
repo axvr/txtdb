@@ -50,7 +50,7 @@ class Table(object):
         return columns
 
     def __parse_row(self, row):
-        return list(map(self.__cast_field, re.split("(?<!\\\),", row.strip())))
+        return list(map(self.__cast_field, re.split(r"(?<!\\),", row.strip())))
 
     def __cast_field(self, field):
         if field.lower() == "true":

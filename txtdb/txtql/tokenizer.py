@@ -1,28 +1,53 @@
 import re
 
 class Tokenizer:
+    # TODO add more tokens
     TOKEN_TYPES = [
-        ["select", "\\bSELECT\\b"],
-        ["where",  "\\bWHERE\\b"],
-        ["from",   "\\bFROM\\b"],
-        ["order",  "\\bORDER\\s+BY\\b"],
-        ["create", "\\bCREATE\\b"],
-        ["drop",   "\\bDROP\\b"],
-        ["table",  "\\bTABLE\\b"],
-        ["name", "\\b(?:[a-zA-Z]+|\\[[a-zA-Z _-]+\\])\\b"],
-        ["string", "'.*?(?<!\\\)'"],
-        ["comma", ","],
-        ["integer", "\\b[0-9]+\\b"],
-        ["and", "\\bAND\\b"],
-        ["or", "\\bOR\\b"],
-        ["not", "\\bNOT\\b"],
-        ["notequal", "(?:!=|<>)"],
-        ["equal", "="],
-        ["plus", "\\+"],
-        ["subtract", "-"],
-        ["multiply", "\\*"],
-        ["divide", "\\/"],
-        ["modulo", "%"]
+        ["select", r"(?i)\bSELECT\b"],
+        ["where", r"(?i)\bWHERE\b"],
+        ["insert", r"(?i)\bINSERT\b"],
+        ["update", r"(?i)\bUPDATE\b"],
+        ["delete", r"(?i)\bDELETE\b"],
+        ["into", r"(?i)\bINTO\b"],
+        ["from", r"(?i)\bFROM\b"],
+        ["values", r"(?i)\bVALUES\b"],
+        ["order", r"(?i)\bORDER\s+BY\b"],
+        ["group", r"(?i)\bGROUP\s+BY\b"],
+        ["create", r"(?i)\bCREATE\b"],
+        ["join_left_outer", r"(?i)\bLEFT\s+(?:OUTER\s+)?JOIN\b"],
+        ["join_right_outer", r"(?i)\bRIGHT\s+(?:OUTER\s+)?JOIN\b"],
+        ["join_full_outer", r"(?i)\bFULL\s+(?:OUTER\s+)?JOIN\b"],
+        ["join_cross", r"(?i)\bCROSS\s+JOIN\b"],
+        ["join_inner", r"(?i)\b(?:INNER\s+)?JOIN\b"],
+        ["on", r"(?i)\bON\b"],
+        ["in", r"(?i)\bIN\b"],
+        ["exists", r"(?i)\bEXISTS\b"],
+        ["drop", r"(?i)\bDROP\b"],
+        ["table", r"(?i)\bTABLE\b"],
+        ["select_star", r"\*"],
+        ["comma", r","],
+        ["integer", r"\b[0-9]+\b"],
+        ["true", r"(?i)\bTRUE\b"],
+        ["false", r"(?i)\bFALSE\b"],
+        ["null", r"(?i)\bNULL\b"],
+        ["and", r"(?i)\bAND\b"],
+        ["or", r"(?i)\bOR\b"],
+        ["not", r"(?i)\bNOT\b"],
+        ["not_equal", r"(?:!=|<>)"],
+        ["add", r"\+"],
+        ["subtract", r"-"],
+        ["multiply", r"\*"], # TODO differentiate from 'select_star' token?
+        ["divide", r"\/"],
+        ["modulo", r"%"],
+        ["greater", r">"],
+        ["less", r"<"],
+        ["greater_equal", r">="],
+        ["less_equal", r"<="],
+        ["equal", r"="],
+        ["name", r"\b(?:[a-zA-Z]+|\[[a-zA-Z _-]+\])\b"],
+        ["string", r"'.*?(?<!\\)'"],
+        ["open_paren", r"\("],
+        ["close_paren", r"\)"],
     ]
 
     def __init__(self, code):
@@ -34,15 +59,15 @@ class Tokenizer:
         self.code = self.code.strip()
 
         while self.code != "":
-            tokens.append(self.tokenize_one_token())
+            tokens.append(self.tokenize_next_token())
             self.code = self.code.strip()
             print(str(tokens))
 
         return tokens
 
-    def tokenize_one_token(self):
+    def tokenize_next_token(self):
         for (type, pattern) in self.TOKEN_TYPES:
-            m = re.match("\\A(" + pattern + ")", self.code, re.IGNORECASE)
+            m = re.match(r"\A(" + pattern + r")", self.code)
             if m is not None:
                 value = m.group(1)
                 self.code = self.code[len(value):]

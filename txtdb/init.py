@@ -29,6 +29,7 @@ def main():
     # Write the contents of the database to disk
     db.write()
 
-# TODO backups and transactions
+    db.create_backup()
+
 # TODO interactive mode, to import CSV files
 # TODO interactive SQL environment (use recursive interface?)
