@@ -9,18 +9,28 @@ fh = open("test.sql", "r")
 code = " ".join(map(lambda x: x.strip(), fh.readlines()))
 fh.close()
 
-tokens = Tokenizer(code).tokenize()
+print("Tokens")
+print("--------------------")
+print()
 
+tokens = Tokenizer(code).tokenize()
 print(tokens)
 
+print()
+print()
+print("Tree")
 print("--------------------")
+print()
 
-tree = Parser(tokens).parse()
+trees = Parser(tokens).parse()
+for tree in trees:
+    print(tree)
 
-print(tree)
-
+print()
+print()
+print("Generated Code")
 print("--------------------")
+print()
 
 generated_code = Generator().generate(tree)
-
 print(generated_code)

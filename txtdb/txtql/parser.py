@@ -1,45 +1,47 @@
 from collections import namedtuple
 
-RootNode = namedtuple("RootNode", "select_node from_node where_node")
-
 # Types
 StringNode = namedtuple("StringNode", "value")
 IntegerNode = namedtuple("IntegerNode", "value")
 BooleanNode = namedtuple("BooleanNode", "value")
+NullNode = namedtuple("NullNode", "value")
 
 NameNode = namedtuple("NameNode", "value")
 
-# TODO switch out 'SelectNode' for a more generic node
-SelectNode = namedtuple("SelectNode", "columns")
-WhereNode = namedtuple("WhereNode", "expression")
+WhereNode = namedtuple("WhereNode", "column operation value")
 FromNode = namedtuple("FromNode", "table")
+SetNode = namedtuple("SetNode", "column value")
+
+SelectNode = namedtuple("SelectNode", "columns From Where")
+CreateNode = namedtuple("CreateNode", "")
+InsertNode = namedtuple("InsertNode", "")
+UpdateNode = namedtuple("UpdateNode", "table Set Where")
+DeleteNode = namedtuple("DeleteNode", "From Where")
 
 class Parser:
     def __init__(self, tokens):
         self.tokens = tokens
 
     def parse(self):
+        # Remove comments
+        self.tokens = list(filter(lambda t: t.type != "comment", self.tokens))
 
-        select_node = None
-        where_node  = None
-        from_node   = None
+        trees = []
 
-        # Parse SELECT,
+        while len(self.tokens) > 0:
+            trees.append(self.__parse_block())
+
+        return trees
+
+    def __parse_block(self):
         if self.__peek("select"):
-            select_node = self.__parse_select()
-
-        # Parse FROM,
-        if self.__peek("from"):
-            from_node = self.__parse_from()
-
-        # Parse WHERE
-        if self.__peek("where"):
-            where_node = self.__parse_where()
-
-        # Repeat?
-
-        return RootNode(select_node=select_node, from_node=from_node,
-                where_node=where_node)
+            return self.__parse_select()
+        elif self.__peek("delete"):
+            return self.__parse_delete()
+        elif self.__peek("update"):
+            return self.__parse_update()
+        else:
+            raise RuntimeError("Invalid SQL detected \"" + self.tokens[0].value + "\"")
 
     def __consume(self, expected_type):
         token = self.tokens.pop(0)
@@ -51,7 +53,9 @@ class Parser:
                     "\", but got \"" + token.type + "\"")
 
     def __peek(self, expected_type, offset=0):
-        return self.tokens[offset].type == expected_type
+        if len(self.tokens) > 0:
+            return self.tokens[offset].type == expected_type
+        else: return False
 
     def __parse_string(self):
         string = self.__consume("string").value
@@ -62,7 +66,7 @@ class Parser:
         return StringNode(value=string)
 
     def __parse_integer(self):
-        return IntegerNode(value=self.__consume("integer").value)
+        return IntegerNode(value=int(self.__consume("integer").value))
 
     def __parse_boolean(self):
         value = None
@@ -73,8 +77,14 @@ class Parser:
         elif self.__peek("false"):
             self.__consume("false")
             value = False
+        else:
+            raise TypeError("\"" + self.tokens[0].value + "\" is not of type boolean")
 
         return BooleanNode(value=value)
+
+    def __parse_null(self):
+        self.__consume("null")
+        return NullNode(value=None)
 
     def __parse_name(self):
         name = self.__consume("name").value
@@ -84,21 +94,6 @@ class Parser:
 
         return NameNode(value=name)
 
-    def __parse_select(self):
-        self.__consume("select")
-
-        columns = []
-
-        # TODO check for 'select_star' token
-
-        columns.append(self.__parse_name())
-
-        while (self.__peek("comma")):
-            self.__consume("comma")
-            columns.append(self.__parse_name())
-
-        return SelectNode(columns=columns)
-
     def __parse_from(self):
         self.__consume("from")
         table = self.__parse_name()
@@ -106,4 +101,100 @@ class Parser:
 
     def __parse_where(self):
         self.__consume("where")
-        return WhereNode(expression=None)
+
+        # IN
+        # AND
+        # OR
+        # NOT
+        # NULL
+        # =
+        # *
+        # /
+        # -
+        # <> !=
+        # <
+        # >
+        # <=
+        # >=
+        # ( ... )
+        # integer
+        # boolean
+        # string
+
+        #return WhereNode(expression=None)
+
+    def __parse_set(self):
+
+        col = self.__parse_name()
+
+        self.__consume("equal")
+
+        if self.__peek("integer"):
+            new = self.__parse_integer()
+        elif self.__peek("string"):
+            new = self.__parse_string()
+        elif self.__peek("true") or self.__peek("false"):
+            new = self.__parse_boolean()
+        elif self.__peek("null"):
+            new = self.__parse_null()
+        else:
+            raise TypeError("\"" + self.tokens[0].value + "\" is not a valid type")
+
+        return SetNode(column=col, value=new)
+
+
+    def __parse_select(self):
+        self.__consume("select")
+
+        columns = []
+
+        # TODO check for 'select star'
+
+        columns.append(self.__parse_name())
+
+        while (self.__peek("comma")):
+            self.__consume("comma")
+            columns.append(self.__parse_name())
+
+        from_node = self.__parse_from()
+
+        where_node = None
+
+        if self.__peek("where"):
+            where_node = self.__parse_where()
+
+        return SelectNode(columns=columns, From=from_node, Where=where_node)
+
+    def __parse_delete(self):
+        self.__consume("delete")
+
+        from_node = self.__parse_from()
+
+        where_node = None
+
+        if self.__peek("where"):
+            where_node = self.__parse_where()
+
+        return DeleteNode(From=from_node, Where=where_node)
+
+    def __parse_update(self):
+        self.__consume("update")
+
+        table = self.__parse_name()
+
+        self.__consume("set")
+
+        sets = []
+
+        sets.append(self.__parse_set())
+
+        while self.__peek("comma"):
+            self.__consume("comma")
+            sets.append(self.__parse_set())
+
+        where = None
+
+        if self.__peek("where"):
+            where_node = self.__parse_where()
+
+        return UpdateNode(table=table, Set=sets, Where=where)

@@ -6,6 +6,7 @@ Token = namedtuple('Token', 'type value')
 class Tokenizer:
     # TODO add more tokens
     TOKEN_TYPES = [
+        ["comment", r"/\*.*?\*/"],
         ["select", r"(?i)\bSELECT\b"],
         ["where", r"(?i)\bWHERE\b"],
         ["insert", r"(?i)\bINSERT\b"],
@@ -23,13 +24,14 @@ class Tokenizer:
         ["join_full_outer", r"(?i)\bFULL\s+(?:OUTER\s+)?JOIN\b"],
         ["join_cross", r"(?i)\bCROSS\s+JOIN\b"],
         ["join_inner", r"(?i)\b(?:INNER\s+)?JOIN\b"],
+        ["set", r"(?i)\bSET\b"],
         ["on", r"(?i)\bON\b"],
         ["in", r"(?i)\bIN\b"],
         ["as", r"(?i)\bAS\b"],
         ["exists", r"(?i)\bEXISTS\b"],
         ["drop", r"(?i)\bDROP\b"],
         ["table", r"(?i)\bTABLE\b"],
-        ["select_star", r"\*"],
+        ["asterisk", r"\*"],
         ["comma", r","],
         ["integer", r"\b[0-9]+\b"],
         ["true", r"(?i)\bTRUE\b"],
@@ -41,7 +43,6 @@ class Tokenizer:
         ["not_equal", r"(?:!=|<>)"],
         ["add", r"\+"],
         ["subtract", r"-"],
-        ["multiply", r"\*"], # TODO differentiate from 'select_star' token?
         ["divide", r"\/"],
         ["modulo", r"%"],
         ["greater", r">"],
