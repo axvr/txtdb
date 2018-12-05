@@ -11,6 +11,7 @@ class Tokenizer:
         ["insert", r"(?i)\bINSERT\b"],
         ["update", r"(?i)\bUPDATE\b"],
         ["delete", r"(?i)\bDELETE\b"],
+        ["truncate", r"(?i)\bTRUNCATE\b"],
         ["into", r"(?i)\bINTO\b"],
         ["from", r"(?i)\bFROM\b"],
         ["values", r"(?i)\bVALUES\b"],

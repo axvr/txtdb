@@ -1,3 +1,3 @@
-SELECT something
-FROM [sometable]
-WHERE something = 'foobar'
+SELECT hello, world
+FROM [foo bar]
+WHERE hello = 'foobar'
