@@ -1,5 +1,6 @@
 from database import Database
 from cli import parse_cli_options
+import interactive
 
 def main():
     args = parse_cli_options()
@@ -7,7 +8,7 @@ def main():
 
     # SQL REPL
     if args.interactive:
-        interactive_sql()
+        interactive.interactive_sql()
 
     return
 

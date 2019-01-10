@@ -17,6 +17,9 @@ def interactive_sql():
             try:
                 tokens = Tokenizer(cmd).tokenize()
                 tree = Parser(tokens).parse()[0]
+
+                print(tree) # NOTE: Temporary
+
                 generated_code = Generator().generate(tree)
             except RuntimeError as error:
                 print(error.args[-1])
@@ -24,6 +27,10 @@ def interactive_sql():
             # TODO execute generated code
 
             # TODO print number of affected lines
+
+    except KeyboardInterrupt:
+        print()
+        interactive_sql()
 
     except EOFError:
         print()
