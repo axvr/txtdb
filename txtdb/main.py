@@ -2,8 +2,8 @@ from database import Database
 from cli import parse_cli_options
 
 def main():
-    (opt, args) = parse_cli_options()
-    db = Database(opt.database)
+    args = parse_cli_options()
+    db = Database(args.database)
 
     # Examples
     # --------
@@ -29,7 +29,7 @@ def main():
     # Write the contents of the database to disk
     db.write()
 
-    db.create_backup()
+    # db.create_backup()
 
 # TODO interactive mode, to import CSV files
 # TODO interactive SQL environment (use recursive interface?)
