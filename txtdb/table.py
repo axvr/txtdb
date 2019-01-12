@@ -112,6 +112,7 @@ class Table(object):
 
     def update(self, original, updated):
         """Change a row in the table"""
+        # TODO don't allow changing the primary key
         if self.__check_row_is_valid(updated, check_pk=False):
             for idx, row in enumerate(self.rows):
                 if row == original:

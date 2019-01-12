@@ -8,13 +8,13 @@ NullNode = namedtuple("NullNode", "value")
 
 NameNode = namedtuple("NameNode", "value")
 
-WhereNode = namedtuple("WhereNode", "column operation value")
+WhereNode = namedtuple("WhereNode", "column operation value") # FIXME
 FromNode = namedtuple("FromNode", "table")
 SetNode = namedtuple("SetNode", "column value")
 
 SelectNode = namedtuple("SelectNode", "columns From Where")
-CreateNode = namedtuple("CreateNode", "")
-InsertNode = namedtuple("InsertNode", "")
+CreateNode = namedtuple("CreateNode", "") # TODO
+InsertNode = namedtuple("InsertNode", "") # TODO
 UpdateNode = namedtuple("UpdateNode", "table Set Where")
 DeleteNode = namedtuple("DeleteNode", "From Where")
 
@@ -44,6 +44,7 @@ class Parser:
             raise RuntimeError("Invalid SQL detected \"" + self.tokens[0].value + "\"")
 
     def __consume(self, expected_type):
+        # FIXME give better error message when no token is at position '0'
         token = self.tokens.pop(0)
 
         if token.type == expected_type:
@@ -55,7 +56,8 @@ class Parser:
     def __peek(self, expected_type, offset=0):
         if len(self.tokens) > 0:
             return self.tokens[offset].type == expected_type
-        else: return False
+        else:
+            return False
 
     def __parse_string(self):
         string = self.__consume("string").value
@@ -102,7 +104,13 @@ class Parser:
     def __parse_where(self):
         self.__consume("where")
 
+        # IN, NOT IN, SQL statement
         # IN
+        # NOT IN
+        # ( ... ) - Could contain a SELECT, or a set of values (comma-separated)
+        if self.__peek("IN"):
+            pass
+
         # AND
         # OR
         # NOT
@@ -116,10 +124,10 @@ class Parser:
         # >
         # <=
         # >=
-        # ( ... )
         # integer
         # boolean
         # string
+        # other values in the table (e.g. table-name.column)
 
         #return WhereNode(expression=None)
 
@@ -146,15 +154,23 @@ class Parser:
     def __parse_select(self):
         self.__consume("select")
 
-        columns = []
+        # Handle 'SELECT *'
+        if self.__peek("asterisk"):
+            self.__consume("asterisk")
+            columns=None # NOTE: a 'None' value means "select all columns"
 
-        # TODO check for 'select star'
+        # Manually specifiing columns
+        elif self.__peek("name"):
+            columns = []
 
-        columns.append(self.__parse_name())
-
-        while (self.__peek("comma")):
-            self.__consume("comma")
             columns.append(self.__parse_name())
+
+            while (self.__peek("comma")):
+                self.__consume("comma")
+                columns.append(self.__parse_name())
+
+        else:
+            raise RuntimeError("\"SELECT\" must be followed by a column name")
 
         from_node = self.__parse_from()
 
