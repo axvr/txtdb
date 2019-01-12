@@ -1,22 +1,24 @@
-"""Interact with the database using a SQL REPL"""
-
 import readline
+
 from os import getcwd
 from os.path import isfile, join, expanduser
+from distutils.dir_util import mkpath
+
 from txtql.tokenizer import Tokenizer
 from txtql.parser import Parser
 from txtql.generator import Generator
 
 # TODO add support for writing queries across multiple lines
 
-def interactive_sql():
+def sql_interactive(db):
     """Start the SQL REPL"""
 
-    # TODO Maybe put this in ~/.config instead
-    history_file = join(expanduser("~"), ".txtdb_history")
+    history_dir =  join(expanduser("~"), ".config", "txtdb")
+    history_file = join(history_dir, "history")
 
     if not isfile(history_file):
-        open(history_file, 'a').close()
+        mkpath(history_dir)
+        open(history_file, "a").close()
 
     readline.read_history_file(history_file)
 
@@ -52,3 +54,28 @@ def interactive_sql():
 
     finally:
         readline.write_history_file(history_file)
+
+
+def sql_file(filepath, db):
+    """Execute a SQL file on the Database"""
+    fh = open(filepath, "r")
+
+    # Remove all trailing and leading whitespace on tokens
+    code = " ".join(map(lambda x: x.strip(), fh.readlines()))
+    fh.close()
+
+    print("== Tokens ==\n")
+    tokens = Tokenizer(code).tokenize()
+    print(tokens)
+
+    print("\n== Trees ==\n")
+    trees = Parser(tokens).parse()
+    for tree in trees:
+        print(tree)
+
+    print("\n== Generated Code ==\n")
+    generated_code = Generator().generate(tree)
+    print(generated_code)
+
+    # TODO execute generated code on the database
+    # TODO print number of affected lines

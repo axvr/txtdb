@@ -1,6 +1,6 @@
 from database import Database
 from cli import parse_cli_options
-import interactive
+import sql_runner
 
 def main():
     args = parse_cli_options()
@@ -8,8 +8,12 @@ def main():
 
     # SQL REPL
     if args.interactive:
-        interactive.interactive_sql()
+        sql_runner.sql_interactive(db)
+
+    # Execute a SQL file
+    if args.sql_file:
+        sql_runner.sql_file(args.sql_file, db)
 
     return
 
-# TODO interactive mode, to import CSV files
+# TODO to import CSV files (interactively)
