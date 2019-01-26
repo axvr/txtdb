@@ -3,7 +3,7 @@ from collections import namedtuple
 
 Token = namedtuple('Token', 'type value')
 
-class Tokenizer:
+class Tokeniser:
     # TODO add more tokens
     TOKEN_TYPES = [
         ["comment", r"/\*.*?\*/"],
@@ -59,18 +59,18 @@ class Tokenizer:
     def __init__(self, code):
         self.code = code
 
-    def tokenize(self):
+    def tokenise(self):
         tokens = []
 
         self.code = self.code.strip()
 
         while self.code != "":
-            tokens.append(self.__tokenize_next_token())
+            tokens.append(self.__tokenise_next_token())
             self.code = self.code.strip()
 
         return tokens
 
-    def __tokenize_next_token(self):
+    def __tokenise_next_token(self):
         for (type, pattern) in self.TOKEN_TYPES:
             m = re.match(r"\A(" + pattern + r")", self.code)
             if m is not None:

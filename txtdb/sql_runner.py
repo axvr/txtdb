@@ -4,7 +4,7 @@ from os import getcwd
 from os.path import isfile, join, expanduser
 from distutils.dir_util import mkpath
 
-from txtql.tokenizer import Tokenizer
+from txtql.tokeniser import Tokeniser
 from txtql.parser import Parser
 from txtql.generator import Generator
 
@@ -29,7 +29,7 @@ def sql_interactive(db):
             if cmd.lower().strip() == "quit": break
 
             try:
-                tokens = Tokenizer(cmd).tokenize()
+                tokens = Tokeniser(cmd).tokenise()
 
                 trees = Parser(tokens).parse()
 
@@ -65,7 +65,7 @@ def sql_file(filepath, db):
     fh.close()
 
     print("== Tokens ==\n")
-    tokens = Tokenizer(code).tokenize()
+    tokens = Tokeniser(code).tokenise()
     print(tokens)
 
     print("\n== Trees ==\n")
