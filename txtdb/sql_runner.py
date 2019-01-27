@@ -46,7 +46,7 @@ def sql_repl(db):
 
     except KeyboardInterrupt:
         print()
-        interactive_sql()
+        sql_repl(db)
 
     except EOFError:
         print()

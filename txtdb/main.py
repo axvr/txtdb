@@ -9,7 +9,7 @@ def main():
 
     # Create the database if it doesn't already exist
     mkpath(args.database) # TODO maybe remove this
-    db = Database(args.database)
+    db = Database(args.database, args.ignore_lock)
 
     # Execute a SQL file
     if args.sql_file:

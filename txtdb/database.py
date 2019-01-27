@@ -9,13 +9,29 @@ from helpers import file_to_table_name, table_to_file_name
 from table import Table
 
 # TODO backups and transactions
-# TODO lock files (and add a --force option to cli.py)
 
 class Database(object):
-    def __init__(self, database_dir):
+    def __init__(self, database_dir, ignore_lock=False):
         self.database_dir = database_dir
+
+        # Database locking
+        self.locked = False
+        self.lock_file = join(database_dir, 'db.lock')
+
+        if isfile(self.lock_file) and not ignore_lock:
+            raise RuntimeError('The database is in use/locked')
+        elif not isfile(self.lock_file):
+            open(self.lock_file, 'a').close()
+            self.locked = True
+
+        # Load the data from disk
         self.tables = {}
         self.reload()
+
+    def __del__(self):
+        # Remove the lock file (only if this instance created it)
+        if isfile(self.lock_file) and self.locked:
+            remove(self.lock_file)
 
     def reload(self):
         """Reload the database tables from the table files"""

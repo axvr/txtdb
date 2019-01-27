@@ -12,4 +12,7 @@ def parse_cli_options():
     parser.add_argument("-f", "--file", dest="sql_file",
             default=None, help="SQL file to execute on the database")
 
+    parser.add_argument("--force", dest="ignore_lock", action="store_true",
+            help="Ignore the database lock file (dangerous)")
+
     return parser.parse_args()
