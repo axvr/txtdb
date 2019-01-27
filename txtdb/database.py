@@ -9,6 +9,7 @@ from helpers import file_to_table_name, table_to_file_name
 from table import Table
 
 # TODO backups and transactions
+# TODO lock files (and add a --force option to cli.py)
 
 class Database(object):
     def __init__(self, database_dir):

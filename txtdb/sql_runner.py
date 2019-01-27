@@ -8,9 +8,7 @@ from txtql.tokeniser import Tokeniser
 from txtql.parser import Parser
 from txtql.generator import Generator
 
-# TODO add support for writing queries across multiple lines
-
-def sql_interactive(db):
+def sql_repl(db):
     """Start the SQL REPL"""
 
     history_dir =  join(expanduser("~"), ".config", "txtdb")
@@ -25,6 +23,8 @@ def sql_interactive(db):
     try:
         while True:
             cmd = input("> ")
+
+            # TODO add support for writing queries across multiple lines
 
             if cmd.lower().strip() == "quit": break
 
