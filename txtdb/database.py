@@ -10,8 +10,10 @@ from table import Table
 
 # TODO backups and transactions
 
-class Database(object):
+class Database():
+
     def __init__(self, database_dir, ignore_lock=False):
+        """Constructor: create new db instance"""
         self.database_dir = database_dir
 
         # Database locking
@@ -29,40 +31,45 @@ class Database(object):
         self.reload()
 
     def __del__(self):
+        """Destructor: destroy the db instance"""
         # Remove the lock file (only if this instance created it)
         if isfile(self.lock_file) and self.locked:
             remove(self.lock_file)
+
+    def __get_table_files(self):
+        for f in listdir(self.database_dir):
+            if isfile(join(self.database_dir, f)) and f.endswith(".csv"):
+                yield file_to_table_name(f)
 
     def reload(self):
         """Reload the database tables from the table files"""
         for table in self.__get_table_files():
             self.tables[table] = Table(table, self.database_dir)
 
+    def write(self):
+        """Write all changes to the database"""
+        for table in self.tables:
+            table.write()
+
     def create_table(self, name, columns):
         """Create a new table in the database"""
-        if name not in self.tables:
-            # TODO ensure columns are in valid format
-            self.tables[name] = Table(name, self.database_dir, columns)
-        else:
-            raise NameError("Table with name \"" + name + "\" already exists")
+        if name in self.tables:
+            raise NameError("Table \"" + name + "\" already exists")
 
-    def write(self):
-        """Save all changes to the database"""
-        for table in self.tables:
-            self.tables[file_to_table_name(table)].write()
+        # TODO check that columns is valid
+        self.tables[name] = Table(name, self.database_dir, columns)
 
-    def drop(self, table):
+    def drop_table(self, table):
+        """Remove table from the database"""
         if self.tables.pop(table, None) is None:
-            raise NameError("Table with name \"" + table + "\" doesn't exist")
+            raise NameError("Table \"" + table + "\" doesn't exist")
 
+        # FIXME: This causes a change to the saved database, which wouldn't
+        # work with the planned transaction feature
         f = table_to_file_name(self.database_dir, table)
         if isfile(f):
             remove(f)
 
-    def __get_table_files(self):
-        for f in listdir(self.database_dir):
-            if (isfile(join(self.database_dir, f)) and f.endswith(".csv")):
-                yield file_to_table_name(f)
 
     def create_backup(self, name="backup"):
         """Create a full backup of the database table files"""

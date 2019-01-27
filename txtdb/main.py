@@ -8,7 +8,9 @@ def main():
     args = parse_cli_options()
 
     # Create the database if it doesn't already exist
-    mkpath(args.database) # TODO maybe remove this
+    mkpath(args.database)
+
+    # Instantiate the requested database instance
     db = Database(args.database, args.ignore_lock)
 
     # Execute a SQL file
