@@ -5,6 +5,7 @@ from os.path import isfile, join
 from distutils.dir_util import mkpath
 from distutils.file_util import copy_file
 from datetime import datetime
+
 from helpers import file_to_table_name, table_to_file_name
 from table import Table
 
@@ -32,7 +33,7 @@ class Database():
 
     def __del__(self):
         """Destructor: destroy the db instance"""
-        # Remove the lock file (only if this instance created it)
+        # Remove the lock file (but, only if this instance created it)
         if isfile(self.lock_file) and self.locked:
             remove(self.lock_file)
 
@@ -87,8 +88,8 @@ class Database():
     def create_transaction(self):
         pass
 
-    def rollback_transaction(self):
+    def commit_transaction(self):
         pass
 
-    def commit_transaction(self):
+    def rollback_transaction(self):
         pass

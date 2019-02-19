@@ -6,6 +6,7 @@ from helpers import table_to_file_name
 # TODO Foreign keys and table relationships
 
 class Table():
+
     def __init__(self, table_name, database_dir, columns=None):
         self.name = table_name
         self.dir = database_dir

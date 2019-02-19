@@ -1,11 +1,11 @@
 from distutils.dir_util import mkpath
 
 from database import Database
-from cli import parse_cli_options
+import cli
 import sql_runner
 
 def main():
-    args = parse_cli_options()
+    args = cli.parse_args()
 
     # Create the database if it doesn't already exist
     mkpath(args.database)
