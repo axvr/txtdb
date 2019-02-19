@@ -8,7 +8,10 @@ NullNode = namedtuple("NullNode", "value")
 
 NameNode = namedtuple("NameNode", "value")
 
-WhereNode = namedtuple("WhereNode", "column operation value") # FIXME
+# Search
+IncludeNode = namedtuple("IncludeNode", "includes list")
+
+WhereNode = namedtuple("WhereNode", "column expression")
 FromNode = namedtuple("FromNode", "table")
 SetNode = namedtuple("SetNode", "column value")
 
@@ -54,7 +57,7 @@ class Parser:
                     "\", but got \"" + token.type + "\"")
 
     def __peek(self, expected_type, offset=0):
-        if len(self.tokens) > 0:
+        if len(self.tokens) > offset:
             return self.tokens[offset].type == expected_type
         else:
             return False
@@ -104,32 +107,67 @@ class Parser:
     def __parse_where(self):
         self.__consume("where")
 
-        # IN, NOT IN, SQL statement
-        # IN
-        # NOT IN
-        # ( ... ) - Could contain a SELECT, or a set of values (comma-separated)
-        if self.__peek("IN"):
+        col = NameNode(self.__consume("name").value)
+
+        # (NOT) IN - Compare against a list or subquery
+        if self.__peek("in") or self.__peek("in", 1):
+
+            includes = True
+
+            if self.__peek("not"):
+                self.__consume("not")
+                includes = False
+
+            self.__consume("in")
+
+            self.__consume("open_paren")
+
+            list = []
+
+            while not self.__peek("close_paren"):
+
+                if self.__peek("select"):
+                    list.append(self.__parse_select())
+                elif self.__peek("integer"):
+                    list.append(self.__parse_integer())
+                elif self.__peek("string"):
+                    list.append(self.__parse_string())
+                elif self.__peek("true") or self.__peek("false"):
+                    list.append(self.__parse_boolean())
+                elif self.__peek("null"):
+                    list.append(self.__parse_null())
+                else:
+                    raise TypeError("\"" + self.tokens[0].value + "\" is not a valid item to compare against")
+
+                if not self.__peek("close_paren"):
+                    self.__consume("comma")
+
+            self.__consume("close_paren")
+
+            expression = IncludeNode(includes=includes, list=list)
+
+        else:
+            # TODO finish this
+            # AND
+            # OR
+            # NOT
+            # NULL
+            # =
+            # *
+            # /
+            # -
+            # <> !=
+            # <
+            # >
+            # <=
+            # >=
+            # integer
+            # boolean
+            # string
+            # other values in the table (e.g. table-name.column)
             pass
 
-        # AND
-        # OR
-        # NOT
-        # NULL
-        # =
-        # *
-        # /
-        # -
-        # <> !=
-        # <
-        # >
-        # <=
-        # >=
-        # integer
-        # boolean
-        # string
-        # other values in the table (e.g. table-name.column)
-
-        #return WhereNode(expression=None)
+        return WhereNode(column=col, expression=expression)
 
     def __parse_set(self):
 

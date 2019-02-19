@@ -1,3 +1,13 @@
+SELECT *
+FROM foo
+WHERE bar IN ('hello', 'world')
+
+SELECT * FROM foo
+WHERE baz IN (
+    select * from bar
+    where woz in ('apple', 'steve'))
+
+
 UPDATE sometable
 SET foo = 'bar',
     bar = 'foo'
