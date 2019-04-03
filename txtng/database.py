@@ -6,8 +6,8 @@ from distutils.dir_util import mkpath
 from distutils.file_util import copy_file
 from datetime import datetime
 
-from helpers import file_to_table_name, table_to_file_name
-from table import Table
+from txtng.helpers import file_to_table_name, table_to_file_name
+from txtng.table import Table
 
 # TODO backups and transactions
 

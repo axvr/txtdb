@@ -62,6 +62,9 @@ class Parser:
         else:
             return False
 
+    def __peek_boolean(self, offset=0):
+        return self.__peek("true", offset) or self.__peek("false", offset)
+
     def __parse_string(self):
         string = self.__consume("string").value
 
@@ -132,7 +135,7 @@ class Parser:
                     list.append(self.__parse_integer())
                 elif self.__peek("string"):
                     list.append(self.__parse_string())
-                elif self.__peek("true") or self.__peek("false"):
+                elif self.__peek_boolean():
                     list.append(self.__parse_boolean())
                 elif self.__peek("null"):
                     list.append(self.__parse_null())
@@ -147,7 +150,11 @@ class Parser:
             expression = IncludeNode(includes=includes, list=list)
 
         else:
+            if self.__peek("NOT"):
+                pass
+
             # TODO finish this
+            # IS (NOT)
             # AND
             # OR
             # NOT
@@ -164,7 +171,7 @@ class Parser:
             # integer
             # boolean
             # string
-            # other values in the table (e.g. table-name.column)
+            # TODO other values in the table (e.g. table-name.column)
             pass
 
         return WhereNode(column=col, expression=expression)
@@ -179,7 +186,7 @@ class Parser:
             new = self.__parse_integer()
         elif self.__peek("string"):
             new = self.__parse_string()
-        elif self.__peek("true") or self.__peek("false"):
+        elif self.__peek_boolean():
             new = self.__parse_boolean()
         elif self.__peek("null"):
             new = self.__parse_null()

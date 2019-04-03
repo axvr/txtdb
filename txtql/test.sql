@@ -2,10 +2,11 @@ SELECT *
 FROM foo
 WHERE bar IN ('hello', 'world')
 
+
 SELECT * FROM foo
-WHERE baz IN (
-    select * from bar
-    where woz in ('apple', 'steve'))
+WHERE baz IN
+    (select * from bar
+     where woz in ('apple', 'steve'))
 
 
 UPDATE sometable
@@ -21,4 +22,4 @@ DELETE FROM [foo bar]
 
 SELECT hello, world
 FROM [foo bar]
-/* WHERE hello = 'foobar' */
+/* WHERE hello IS NOT NULL */

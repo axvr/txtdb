@@ -1,6 +1,6 @@
 from distutils.dir_util import mkpath
 
-from database import Database
+from txtng.database import Database
 import cli
 import sql_runner
 

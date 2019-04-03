@@ -1,7 +1,7 @@
 """Create a new table instance"""
 
 import re
-from helpers import table_to_file_name
+from txtng.helpers import table_to_file_name
 
 # TODO Foreign keys and table relationships
 
