@@ -1,8 +1,6 @@
 import readline
 
-from os import getcwd
-from os.path import isfile, join, expanduser
-from distutils.dir_util import mkpath
+from os.path import isfile, join
 
 from txtql.tokeniser import Tokeniser
 from txtql.parser import Parser
@@ -11,14 +9,12 @@ from txtql.generator import Generator
 def sql_repl(db):
     """Start the SQL REPL"""
 
-    history_dir =  join(expanduser("~"), ".config", "txtdb")
-    history_file = join(history_dir, "history")
+    HISTORY_FILE = join(db.database_dir, ".repl_hist")
 
-    if not isfile(history_file):
-        mkpath(history_dir)
-        open(history_file, "a").close()
+    if not isfile(HISTORY_FILE):
+        open(HISTORY_FILE, "a").close()
 
-    readline.read_history_file(history_file)
+    readline.read_history_file(HISTORY_FILE)
 
     try:
         while True:
@@ -53,7 +49,7 @@ def sql_repl(db):
         return
 
     finally:
-        readline.write_history_file(history_file)
+        readline.write_history_file(HISTORY_FILE)
 
 
 def sql_file(filepath, db):
